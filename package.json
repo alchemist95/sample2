@@ -26,9 +26,14 @@
   "dependencies": {
     "axios": "^0.17.1",
     "express": "^4.16.2",
+    "install": "^0.10.2",
     "lodash": "^4.17.4",
+    "prop-types": "^15.6.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "react-router": "^4.2.0"
+    "react-redux": "^5.0.6",
+    "react-router": "^4.2.0",
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0"
   }
 }

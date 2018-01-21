@@ -14,16 +14,38 @@ class SignupForm extends React.Component{
 			password: '',
 			passwordConfirmation: '',
 			timezone: '',
-			errors: '',
-			isLoading: false
+			errors: {},
+			isLoading: false,
+			invalid: false
 		}
 
 		this.onChange = this.onChange.bind(this);
 		this.onSubmit = this.onSubmit.bind(this);
+		this.checkUserExists = this.checkUserExists.bind(this);
 	}
 
 	onChange(e){
 		this.setState({ [e.target.name] : e.target.value });
+	}
+
+	checkUserExists(e){
+		const field = e.target.name;
+		const val = e.target.value;
+		if(val !== ''){
+			this.props.isUserExists(val).then(res => {
+				let errors = this.state.errors;
+				let invalid;
+				if (res.data.user) {
+					errors[field] = 'There is an existing user with a ' + field;
+					invalid = true;
+				}
+				else{
+					errors[field] = '';
+					invalid = false;
+				}
+				this.setState({ errors, invalid })
+			});
+		}
 	}
 
 	isValid(){
@@ -72,6 +94,7 @@ class SignupForm extends React.Component{
  					<input
  					value={this.state.username}
  					onChange={this.onChange}
+ 					onBlur={this.checkUserExists}
  					type="text"
  					name="username"
  					className={classnames("form-control", { 'is-invalid': errors.username })}
@@ -85,6 +108,7 @@ class SignupForm extends React.Component{
  					<input
  					value={this.state.email}
  					onChange={this.onChange}
+ 					onBlur={this.checkUserExists}
  					type="text"
  					name="email"
  					className={classnames("form-control", { 'is-invalid': errors.email })}
@@ -135,7 +159,7 @@ class SignupForm extends React.Component{
 				</div>
 
 				<div className="form-group">
-					<button disabled={this.state.isLoading} className="btn btn-primary brn-lg">
+					<button disabled={this.state.isLoading || this.state.invalid} className="btn btn-primary brn-lg">
 						Sign Up
 					</button>
 				</div>
@@ -146,7 +170,8 @@ class SignupForm extends React.Component{
 
 SignupForm.propTypes = {
 	userSignupRequest: PropTypes.func.isRequired,
-	addFlashMessage: PropTypes.func.isRequired
+	addFlashMessage: PropTypes.func.isRequired,
+	isUserExists: PropTypes.func.isRequired
 }
 
 SignupForm.contextTypes = {

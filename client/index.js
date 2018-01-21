@@ -13,7 +13,7 @@ const store = createStore(
 
 render((
 	<Provider store={store}>
-		<Router>
+		<Router history={browserHistory}>
 			<Routes />
 		</Router>
 	</Provider>

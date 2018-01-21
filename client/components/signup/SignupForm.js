@@ -2,6 +2,8 @@ import React from 'react';
 import timezones from '../../data/timezones'
 import map from 'lodash/map';
 import classnames from 'classnames';
+import validateInput from '../../../server/shared/validations/signup';
+
 
 class SignupForm extends React.Component{
 	constructor(props){
@@ -24,14 +26,29 @@ class SignupForm extends React.Component{
 		this.setState({ [e.target.name] : e.target.value });
 	}
 
+	isValid(){
+		const { errors, isValid } = validateInput(this.state);
+		if(!isValid){
+			this.setState({ errors });
+		}
+		return isValid;
+	}
+
+
 	onSubmit(e){
-		this.setState({errors: {}, isLoading: true });
 		e.preventDefault();
-		this.props.userSignupRequest(this.state)
-			.then(
-				() => {},
-				({ data }) => this.setState({ errors: data, isLoading: false})
-			);
+
+		if (this.isValid()){
+
+			this.setState({errors: {}, isLoading: true });
+			
+			this.props.userSignupRequest(this.state)
+				.then(
+					() => {},
+					({ data }) => this.setState({ errors: data, isLoading: false})
+				);
+			
+		}
 	}
 
 	render(){
@@ -44,17 +61,17 @@ class SignupForm extends React.Component{
 		return(
 			<form onSubmit={this.onSubmit}>
 				<h1>Join our team</h1>
-				<div className={classnames("form-group", { 'has-danger': errors.username })}>
+				<div className="form-group">
  					<label className="control-label">Username</label>
  					<input
  					value={this.state.username}
  					onChange={this.onChange}
  					type="text"
  					name="username"
- 					className="form-control"
+ 					className={classnames("form-control", { 'is-invalid': errors.username })}
  					/>
  					{errors.username &&
- 						<span className="help-block">{errors.username}</span>}
+ 						<span className="invalid-feedback">{errors.username}</span>}
 				</div>
 
 				<div className="form-group">
@@ -64,10 +81,10 @@ class SignupForm extends React.Component{
  					onChange={this.onChange}
  					type="text"
  					name="email"
- 					className="form-control"
+ 					className={classnames("form-control", { 'is-invalid': errors.email })}
  					/>
  					{errors.email &&
- 						<span className="help-block">{errors.email}</span>}
+ 						<span className="invalid-feedback">{errors.email}</span>}
 				</div>
 
 				<div className="form-group">
@@ -77,10 +94,10 @@ class SignupForm extends React.Component{
  					onChange={this.onChange}
  					type="password"
  					name="password"
- 					className="form-control"
+ 					className={classnames("form-control", { 'is-invalid': errors.password })}
  					/>
  					{errors.password &&
- 						<span className="help-block">{errors.password}</span>}
+ 						<span className="invalid-feedback">{errors.password}</span>}
 				</div>
 
 				<div className="form-group">
@@ -90,16 +107,16 @@ class SignupForm extends React.Component{
  					onChange={this.onChange}
  					type="password"
  					name="passwordConfirmation"
- 					className="form-control"
+ 					className={classnames("form-control", { 'is-invalid': errors.passwordConfirmation })}
  					/>
  					{errors.passwordConfirmation &&
- 						<span className="help-block">{errors.passwordConfirmation}</span>} 					
+ 						<span className="invalid-feedback">{errors.passwordConfirmation}</span>} 					
 				</div>
 
 				<div className = "form-group">
 					<label className="control-label">Timezone</label>
 					<select
-						className="form-control"
+						className={classnames("form-control", { 'is-invalid': errors.timezone })}
 						name="timezone"
 						onChange={this.onChange}
 						value={this.state.timezone}
@@ -108,7 +125,7 @@ class SignupForm extends React.Component{
 						{options}
 					</select>
  					{errors.timezone &&
- 						<span className="help-block">{errors.timezone}</span>}
+ 						<span className="invalid-feedback">{errors.timezone}</span>}
 				</div>
 
 				<div className="form-group">
